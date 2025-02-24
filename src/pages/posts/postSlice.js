@@ -8,6 +8,7 @@ const initialState = {
   errors: {},
   currentPage: 1,
   postsPerPage: 5, // Default 5 posts per page
+  searchTerm: "", // Add this for search
 };
 
 export const fetchPosts = createAsyncThunk("post/fetchPosts", async () => {
@@ -72,6 +73,10 @@ export const postSlice = createSlice({
       state.postsPerPage = action.payload;
       state.currentPage = 1; // Reset to first page when changing items per page
     },
+    setSearchTerm: (state, action) => {
+      state.searchTerm = action.payload;
+      state.currentPage = 1; // Reset to first page when searching
+    },
   },
 
   extraReducers: (builder) => {
@@ -134,7 +139,7 @@ export const postSlice = createSlice({
   },
 });
 
-export const { clearErrors, setCurrentPage, setPostsPerPage } =
+export const { clearErrors, setCurrentPage, setPostsPerPage, setSearchTerm } =
   postSlice.actions;
 
 export default postSlice.reducer;
