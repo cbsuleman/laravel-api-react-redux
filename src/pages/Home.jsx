@@ -6,6 +6,7 @@ import {
   setCurrentPage,
   setPostsPerPage,
   setSearchTerm,
+  setSorting,
 } from "./posts/postSlice.js";
 import { useEffect } from "react";
 
@@ -17,6 +18,8 @@ function Home() {
     currentPage,
     postsPerPage,
     searchTerm,
+    sortField,
+    sortOrder,
   } = useSelector((state) => state.post);
   const dispatch = useDispatch();
 
@@ -31,10 +34,23 @@ function Home() {
       post.body.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
+  // Sort posts
+  const sortedPosts = [...filteredPosts].sort((a, b) => {
+    if (sortField === "title") {
+      return sortOrder === "asc"
+        ? a.title.localeCompare(b.title)
+        : b.title.localeCompare(a.title);
+    } else {
+      return sortOrder === "asc"
+        ? new Date(a.created_at) - new Date(b.created_at)
+        : new Date(b.created_at) - new Date(a.created_at);
+    }
+  });
+
   // Get current posts
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
+  const currentPosts = sortedPosts.slice(indexOfFirstPost, indexOfLastPost);
 
   // Change page
   const paginate = (pageNumber) => dispatch(setCurrentPage(pageNumber));
@@ -49,8 +65,18 @@ function Home() {
     dispatch(setSearchTerm(event.target.value));
   };
 
+  // Handle sort
+  const handleSort = (field) => {
+    dispatch(
+      setSorting({
+        field,
+        order: field === sortField && sortOrder === "asc" ? "desc" : "asc",
+      }),
+    );
+  };
+
   // Calculate total pages
-  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+  const totalPages = Math.ceil(sortedPosts.length / postsPerPage);
 
   return (
     <>
@@ -82,8 +108,30 @@ function Home() {
             </select>
           </div>
         </div>
+
+        {/* Sort buttons */}
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleSort("created_at")}
+            className={`px-3 py-1 border rounded ${
+              sortField === "created_at" ? "bg-blue-500 text-white" : ""
+            }`}
+          >
+            Date{" "}
+            {sortField === "created_at" && (sortOrder === "asc" ? "↑" : "↓")}
+          </button>
+          <button
+            onClick={() => handleSort("title")}
+            className={`px-3 py-1 border rounded ${
+              sortField === "title" ? "bg-blue-500 text-white" : ""
+            }`}
+          >
+            Title {sortField === "title" && (sortOrder === "asc" ? "↑" : "↓")}
+          </button>
+        </div>
       </div>
 
+      {/* Rest of your existing JSX remains the same */}
       {(status === "loading" || postStatus === "loading") && (
         <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm">
           <ClipLoader size={100} />
