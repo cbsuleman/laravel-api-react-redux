@@ -26,15 +26,20 @@ function Update() {
     dispatch(fetchUser());
     dispatch(fetchPost(id));
   }, []);
-
   useEffect(() => {
     if (post && user) {
       if (post.user_id !== user.id) {
         navigate("/");
+        return;
       }
-      setFormData({ ...formData, title: post.title, body: post.body });
+
+      setFormData({
+        ...formData,
+        title: post.title,
+        body: post.body,
+      });
     }
-  }, [post]);
+  }, [user, navigate]);
 
   const handleUpdate = async (e) => {
     e.preventDefault();

@@ -165,7 +165,7 @@ function Home() {
           ))}
 
           {/* Pagination */}
-          <div className="flex justify-center gap-2 mt-4">
+          <div className="flex justify-center gap-2 my-4">
             <button
               onClick={() => paginate(currentPage - 1)}
               disabled={currentPage === 1}

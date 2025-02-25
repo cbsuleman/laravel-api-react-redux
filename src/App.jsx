@@ -9,6 +9,7 @@ import Create from "./pages/posts/Create.jsx";
 import Show from "./pages/posts/Show.jsx";
 import Update from "./pages/posts/Update.jsx";
 import { useSelector } from "react-redux";
+import NotFound from "./NotFound.jsx";
 
 function App() {
   const { token, user } = useSelector((state) => state.auth);
@@ -35,6 +36,7 @@ function App() {
             path="/posts/update/:id"
             element={!token ? <Navigate to="/" replace /> : <Update />}
           />
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </div>
