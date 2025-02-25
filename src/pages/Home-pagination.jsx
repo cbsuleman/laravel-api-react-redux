@@ -1,11 +1,7 @@
 import { ClipLoader } from "react-spinners";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchPosts,
-  setCurrentPage,
-  setPostsPerPage,
-} from "./posts/postSlice.js";
+import { fetchPosts, setCurrentPage } from "./posts/postSlice.js";
 import { useEffect } from "react";
 
 function Home() {
@@ -22,38 +18,20 @@ function Home() {
     dispatch(fetchPosts());
   }, []);
 
+  // Get current posts
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
   const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
 
-  const paginate = (pageNumber) => {
-    dispatch(setCurrentPage(pageNumber));
-  };
+  // Change page
+  const paginate = (pageNumber) => dispatch(setCurrentPage(pageNumber));
 
-  const handlePostsPerPageChange = (e) => {
-    dispatch(setPostsPerPage(Number(e.target.value)));
-  };
-
+  // Calculate total pages
   const totalPages = Math.ceil(posts.length / postsPerPage);
 
   return (
     <>
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="title">Latest Posts</h1>
-        <div className="flex items-center gap-2">
-          <label className="text-sm">Posts per page:</label>
-          <select
-            value={postsPerPage}
-            onChange={handlePostsPerPageChange}
-            className="border rounded px-2 py-1"
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={15}>15</option>
-            <option value={20}>20</option>
-          </select>
-        </div>
-      </div>
+      <h1 className="title">Latest Posts</h1>
 
       {(status === "loading" || postStatus === "loading") && (
         <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm">
@@ -86,11 +64,13 @@ function Home() {
               <p>{post.body}</p>
             </div>
           ))}
-          <div className="flex justify-center gap-2 my-4">
+
+          {/* Simple Pagination */}
+          <div className="flex justify-center gap-2 mt-4">
             <button
-              disabled={currentPage === 1}
               onClick={() => paginate(currentPage - 1)}
-              className="px-3 py-1 rounded border disabled:opacity-50 hover:bg-gray-600 hover:text-white "
+              disabled={currentPage === 1}
+              className="px-3 py-1 border rounded disabled:opacity-50"
             >
               Previous
             </button>
@@ -100,7 +80,9 @@ function Home() {
                 <button
                   key={number}
                   onClick={() => paginate(number)}
-                  className={`px-3  py-1 border rounded ${currentPage === number ? "bg-blue-500 text-white" : "hover:bg-gray-600 hover:text-white "}`}
+                  className={`px-3 py-1 border rounded ${
+                    currentPage === number ? "bg-blue-500 text-white" : ""
+                  }`}
                 >
                   {number}
                 </button>
@@ -108,9 +90,9 @@ function Home() {
             )}
 
             <button
-              disabled={currentPage === totalPages}
               onClick={() => paginate(currentPage + 1)}
-              className="px-3 py-1 rounded border disabled:opacity-50 hover:bg-gray-600 hover:text-white "
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 border rounded disabled:opacity-50"
             >
               Next
             </button>

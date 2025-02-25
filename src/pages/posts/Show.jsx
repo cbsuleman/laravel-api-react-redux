@@ -21,7 +21,7 @@ function Show() {
   };
 
   useEffect(() => {
-    dispatch(fetchUser());
+    if (!user) dispatch(fetchUser());
     dispatch(fetchPost(id));
   }, []);
 
@@ -46,7 +46,7 @@ function Show() {
             </div>
           </div>
           <p>Post body</p>
-          {post.user_id === user.id && (
+          {user && post.user_id === user.id && (
             <div className="flex items-center justify-end gap-4">
               <Link
                 to={`/posts/update/${id}`}
