@@ -6,7 +6,6 @@ import {
   setCurrentPage,
   setPostsPerPage,
   setSearchTerm,
-  setSorting,
 } from "./posts/postSlice.js";
 import { useEffect } from "react";
 
@@ -18,8 +17,6 @@ function Home() {
     currentPage,
     postsPerPage,
     searchTerm,
-    sortField,
-    sortOrder,
   } = useSelector((state) => state.post);
   const dispatch = useDispatch();
 
@@ -33,22 +30,10 @@ function Home() {
       post.body.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  const sortedPosts = [...filteredPosts].sort((a, b) => {
-    if (sortField === "title") {
-      return sortOrder === "asc"
-        ? a.title.localeCompare(b.title)
-        : b.title.localeCompare(a.title);
-    } else {
-      return sortOrder === "asc"
-        ? new Date(a.created_at) - new Date(b.created_at)
-        : new Date(b.created_at) - new Date(a.created_at);
-    }
-  });
-
   // Get current posts
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = sortedPosts.slice(indexOfFirstPost, indexOfLastPost);
+  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
 
   const paginate = (pageNumber) => dispatch(setCurrentPage(pageNumber));
 
@@ -58,16 +43,7 @@ function Home() {
 
   const handleSearch = (e) => dispatch(setSearchTerm(e.target.value));
 
-  const handleSort = (field) => {
-    dispatch(
-      setSorting({
-        field,
-        order: field === sortField && sortOrder === "asc" ? "desc" : "asc",
-      }),
-    );
-  };
-
-  const totalPages = Math.ceil(sortedPosts.length / postsPerPage);
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
 
   return (
     <>
@@ -76,12 +52,13 @@ function Home() {
 
         <div className="flex justify-between items-center">
           {/* Search input */}
+
           <input
             type="text"
-            placeholder="Search posts..."
             value={searchTerm}
             onChange={handleSearch}
-            className="border rounded px-3 py-1 w-64"
+            className="px-3 py-1 rounded border w-64"
+            placeholder="Search posts..."
           />
 
           {/* Posts per page selector */}
@@ -99,46 +76,6 @@ function Home() {
             </select>
           </div>
         </div>
-
-        {/* Sort buttons */}
-
-        <div className="flex gap-2">
-          <button
-            onClick={() => handleSort("created_at")}
-            className={`px-3 py-1 border rounded ${sortField === "created_at" ? "bg-blue-500 text-white" : ""}`}
-          >
-            Date{" "}
-            {sortField === "created_at" && (sortOrder === "asc" ? "↑" : "↓")}
-          </button>
-          <button
-            onClick={() => handleSort("title")}
-            className={`px-3 py-1 border rounded ${sortField === "title" ? "bg-blue-500 text-white" : ""}`}
-          >
-            Title {sortField === "title" && (sortOrder === "asc" ? "↑" : "↓")}
-          </button>
-        </div>
-
-        {/* Sort buttons */}
-
-        {/*<div className="flex gap-2">*/}
-        {/*  <button*/}
-        {/*    onClick={() => handleSort("created_at")}*/}
-        {/*    className={`px-3 py-1 border rounded ${*/}
-        {/*      sortField === "created_at" ? "bg-blue-500 text-white" : ""*/}
-        {/*    }`}*/}
-        {/*  >*/}
-        {/*    Date{" "}*/}
-        {/*    {sortField === "created_at" && (sortOrder === "asc" ? "↑" : "↓")}*/}
-        {/*  </button>*/}
-        {/*  <button*/}
-        {/*    onClick={() => handleSort("title")}*/}
-        {/*    className={`px-3 py-1 border rounded ${*/}
-        {/*      sortField === "title" ? "bg-blue-500 text-white" : ""*/}
-        {/*    }`}*/}
-        {/*  >*/}
-        {/*    Title {sortField === "title" && (sortOrder === "asc" ? "↑" : "↓")}*/}
-        {/*  </button>*/}
-        {/*</div>*/}
       </div>
 
       {(status === "loading" || postStatus === "loading") && (

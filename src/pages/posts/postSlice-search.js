@@ -76,11 +76,6 @@ export const postSlice = createSlice({
       state.searchTerm = action.payload;
       state.currentPage = 1;
     },
-    setSorting: (state, action) => {
-      state.sortField = action.payload.field;
-      state.sortOrder = action.payload.order;
-      state.currentPage = 1;
-    },
   },
 
   extraReducers: (builder) => {
@@ -143,12 +138,7 @@ export const postSlice = createSlice({
   },
 });
 
-export const {
-  clearErrors,
-  setCurrentPage,
-  setPostsPerPage,
-  setSearchTerm,
-  setSorting,
-} = postSlice.actions;
+export const { clearErrors, setCurrentPage, setPostsPerPage, setSearchTerm } =
+  postSlice.actions;
 
 export default postSlice.reducer;
