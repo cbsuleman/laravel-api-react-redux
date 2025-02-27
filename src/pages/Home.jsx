@@ -24,29 +24,23 @@ function Home() {
   } = useSelector((state) => state.post);
   const dispatch = useDispatch();
 
-  const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
+  const [localSearchterm, setLocalSearchterm] = useState(searchTerm);
 
   useEffect(() => {
     dispatch(fetchPosts());
   }, [dispatch]);
 
-  // Debounce search dispatch using useEffect
   useEffect(() => {
     const debouncedDispatch = debounce(() => {
-      dispatch(setSearchTerm(localSearchTerm));
-    }, 500); // 500ms debounce
+      dispatch(setSearchTerm(localSearchterm));
+    }, 500);
 
-    debouncedDispatch(); // Trigger the debounced function
+    debouncedDispatch();
 
-    // Cleanup function to cancel debounced call on unmount
     return () => {
       debouncedDispatch.cancel();
     };
-  }, [localSearchTerm, dispatch]);
-
-  const handleSearchChange = (e) => {
-    setLocalSearchTerm(e.target.value); // Update local state instantly
-  };
+  }, [localSearchterm, dispatch]);
 
   useEffect(() => {
     dispatch(fetchPosts());
@@ -81,7 +75,9 @@ function Home() {
     dispatch(setPostsPerPage(Number(event.target.value)));
   };
 
-  const handleSearch = (e) => dispatch(setSearchTerm(e.target.value));
+  // const handleSearch = (e) => dispatch(setSearchTerm(e.target.value));
+
+  const handleSearchChange = (e) => setLocalSearchterm(e.target.value);
 
   const handleSort = (field) => {
     dispatch(
@@ -100,13 +96,12 @@ function Home() {
         <h1 className="title">Latest Posts</h1>
 
         <div className="flex justify-between items-center">
-          {/* Search input */}
           <input
             type="text"
-            placeholder="Search posts..."
-            value={localSearchTerm}
+            value={localSearchterm}
             onChange={handleSearchChange}
-            className="border rounded px-3 py-1 w-64"
+            className="px-3 py-1 border rounded w-64"
+            placeholder="Search posts..."
           />
 
           {/* Posts per page selector */}
