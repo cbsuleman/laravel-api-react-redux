@@ -9,8 +9,6 @@ const initialState = {
   currentPage: 1,
   postsPerPage: 5,
   searchTerm: "",
-  sortField: "created_at",
-  sortOrder: "desc",
 };
 
 export const fetchPosts = createAsyncThunk("post/fetchPosts", async () => {

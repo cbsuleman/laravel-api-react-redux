@@ -34,7 +34,7 @@ function Home() {
   );
 
   const sortedPosts = [...filteredPosts].sort((a, b) => {
-    if (sortField === "title") {
+    if (sortField === "created_at") {
       return sortOrder === "asc"
         ? a.title.localeCompare(b.title)
         : b.title.localeCompare(a.title);
@@ -44,6 +44,18 @@ function Home() {
         : new Date(b.created_at) - new Date(a.created_at);
     }
   });
+
+  // const sortedPosts = [...filteredPosts].sort((a, b) => {
+  //   if (sortField === "title") {
+  //     return sortOrder === "asc"
+  //       ? a.title.localeCompare(b.title)
+  //       : b.title.localeCompare(a.title);
+  //   } else {
+  //     return sortOrder === "asc"
+  //       ? new Date(a.created_at) - new Date(b.created_at)
+  //       : new Date(b.created_at) - new Date(a.created_at);
+  //   }
+  // });
 
   // Get current posts
   const indexOfLastPost = currentPage * postsPerPage;
@@ -57,6 +69,15 @@ function Home() {
   };
 
   const handleSearch = (e) => dispatch(setSearchTerm(e.target.value));
+
+  // const handleSort = (field) => {
+  //   dispatch(
+  //     setSorting({
+  //       field,
+  //       order: field === sortField && sortOrder === "asc" ? "desc" : "asc",
+  //     }),
+  //   );
+  // };
 
   const handleSort = (field) => {
     dispatch(
@@ -108,13 +129,14 @@ function Home() {
             className={`px-3 py-1 border rounded ${sortField === "created_at" ? "bg-blue-500 text-white" : ""}`}
           >
             Date{" "}
-            {sortField === "created_at" && (sortOrder === "asc" ? "↑" : "↓")}
+            {sortField === "created_at" && (sortOrder === "asc" ? "👆" : "👇")}
           </button>
+
           <button
             onClick={() => handleSort("title")}
             className={`px-3 py-1 border rounded ${sortField === "title" ? "bg-blue-500 text-white" : ""}`}
           >
-            Title {sortField === "title" && (sortOrder === "asc" ? "↑" : "↓")}
+            Title {sortField === "title" && (sortOrder === "asc" ? "👆" : "👇")}
           </button>
         </div>
 
