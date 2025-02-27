@@ -8,7 +8,8 @@ import {
   setSearchTerm,
   setSorting,
 } from "./posts/postSlice.js";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { debounce } from "lodash";
 
 function Home() {
   const { status } = useSelector((state) => state.auth);
@@ -22,6 +23,30 @@ function Home() {
     sortOrder,
   } = useSelector((state) => state.post);
   const dispatch = useDispatch();
+
+  const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
+
+  useEffect(() => {
+    dispatch(fetchPosts());
+  }, [dispatch]);
+
+  // Debounce search dispatch using useEffect
+  useEffect(() => {
+    const debouncedDispatch = debounce(() => {
+      dispatch(setSearchTerm(localSearchTerm));
+    }, 500); // 500ms debounce
+
+    debouncedDispatch(); // Trigger the debounced function
+
+    // Cleanup function to cancel debounced call on unmount
+    return () => {
+      debouncedDispatch.cancel();
+    };
+  }, [localSearchTerm, dispatch]);
+
+  const handleSearchChange = (e) => {
+    setLocalSearchTerm(e.target.value); // Update local state instantly
+  };
 
   useEffect(() => {
     dispatch(fetchPosts());
@@ -45,18 +70,6 @@ function Home() {
     }
   });
 
-  // const sortedPosts = [...filteredPosts].sort((a, b) => {
-  //   if (sortField === "title") {
-  //     return sortOrder === "asc"
-  //       ? a.title.localeCompare(b.title)
-  //       : b.title.localeCompare(a.title);
-  //   } else {
-  //     return sortOrder === "asc"
-  //       ? new Date(a.created_at) - new Date(b.created_at)
-  //       : new Date(b.created_at) - new Date(a.created_at);
-  //   }
-  // });
-
   // Get current posts
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -69,15 +82,6 @@ function Home() {
   };
 
   const handleSearch = (e) => dispatch(setSearchTerm(e.target.value));
-
-  // const handleSort = (field) => {
-  //   dispatch(
-  //     setSorting({
-  //       field,
-  //       order: field === sortField && sortOrder === "asc" ? "desc" : "asc",
-  //     }),
-  //   );
-  // };
 
   const handleSort = (field) => {
     dispatch(
@@ -100,8 +104,8 @@ function Home() {
           <input
             type="text"
             placeholder="Search posts..."
-            value={searchTerm}
-            onChange={handleSearch}
+            value={localSearchTerm}
+            onChange={handleSearchChange}
             className="border rounded px-3 py-1 w-64"
           />
 
@@ -139,28 +143,6 @@ function Home() {
             Title {sortField === "title" && (sortOrder === "asc" ? "👆" : "👇")}
           </button>
         </div>
-
-        {/* Sort buttons */}
-
-        {/*<div className="flex gap-2">*/}
-        {/*  <button*/}
-        {/*    onClick={() => handleSort("created_at")}*/}
-        {/*    className={`px-3 py-1 border rounded ${*/}
-        {/*      sortField === "created_at" ? "bg-blue-500 text-white" : ""*/}
-        {/*    }`}*/}
-        {/*  >*/}
-        {/*    Date{" "}*/}
-        {/*    {sortField === "created_at" && (sortOrder === "asc" ? "↑" : "↓")}*/}
-        {/*  </button>*/}
-        {/*  <button*/}
-        {/*    onClick={() => handleSort("title")}*/}
-        {/*    className={`px-3 py-1 border rounded ${*/}
-        {/*      sortField === "title" ? "bg-blue-500 text-white" : ""*/}
-        {/*    }`}*/}
-        {/*  >*/}
-        {/*    Title {sortField === "title" && (sortOrder === "asc" ? "↑" : "↓")}*/}
-        {/*  </button>*/}
-        {/*</div>*/}
       </div>
 
       {(status === "loading" || postStatus === "loading") && (
