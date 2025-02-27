@@ -32,7 +32,7 @@ function Home() {
 
   useEffect(() => {
     const debouncedDispatch = debounce(() => {
-      dispatch(setSearchTerm(localSearchterm));
+      dispatch(setSearchTerm(localSearchterm.trim()));
     }, 500);
 
     debouncedDispatch();
